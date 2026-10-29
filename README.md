@@ -1,14 +1,16 @@
-# 🖼️ Local AI OCR & Text Refiner (Web UI)
+# 🖼️ Local AI OCR & Text Refiner
 
-A private, browser-based application that allows you to drag and drop images to extract text and automatically fix transcription errors using local Large Language Models (LLMs).
+A privacy-first, web-based application that extracts text from images using OCR and uses your local Large Language Models (LLMs) to clean, fix, and verify the transcription.
 
 ## ✨ Features
-* **Drag-and-Drop Interface:** A modern, web-based UI built with Streamlit.
-* **Dual-Language OCR:** Supports both English and Estonian text recognition via EasyOCR.
-* **AI-Powered Refinement:** Uses a local LLM (Gemma) to fix "hallucinated" characters and spelling errors based on linguistic context.
-* **Side-by-Side Comparison:** View your original image and the extracted text simultaneously.
-* **100% Private & Local:** No images or text ever leave your computer. All processing is done via your local CPU/GPU.
-* **Export Ready:** Download your cleaned text directly as a `.txt` file.
+
+* **🌐 Modern Web UI:** A beautiful, easy-to-use interface built with **Streamlit**.
+* **🖱️ Drag-and-Drop:** Simply drop your images into the browser to begin processing.
+* **🤖 Dynamic Model Selection:** Automatically detects all models installed in your **Ollama** library. Switch between `gemma`, `llama3`, `mistral`, or any other model via the sidebar.
+* **🔍 AI-Powered Refinement:** Uses linguistic intelligence to fix "hallucinated" characters (e.g., turning `0` back into `O`) and spelling errors.
+* **🇪🇪 Dual-Language OCR:** Optimized for both **English** and **Estonian** text recognition.
+* **🔒 100% Private:** No data ever leaves your machine. Processing is entirely local.
+* **📥 Export Ready:** Download your cleaned and verified text as a `.txt` file.
 
 ---
 
@@ -17,11 +19,11 @@ A private, browser-based application that allows you to drag and drop images to 
 Before running the application, you must have the following installed:
 
 1. **Python 3.8 or higher** ([Download Python](https://www.python.org/downloads/))
-2. **Ollama** (The engine that runs the local AI)
+2. **Ollama** (The engine that runs your local AI)
    * Download from [ollama.com](https://ollama.com/)
-   * Once installed, open your terminal/command prompt and run:
+   * **Important:** Ensure you have downloaded at least one model. Open your terminal and run:
      ```bash
-     ollama run gemma:2b
+     ollama pull gemma:2b
      ```
      *(Any Gemma model works; the app picks the strongest one installed. On a low-memory machine use `ollama pull gemma:2b` instead.)*
 
@@ -46,11 +48,13 @@ Before running the application, you must have the following installed:
    streamlit run app.py
    ```
 2. **Open the Browser:**
-   A new tab should automatically open in your default web browser (usually at `http://localhost:8501`).
-3. **Process an Image:**
-   * Drag an image file (`.jpg`, `.jpeg`, or `.png`) into the upload box.
-   * Wait for the "Running OCR" and "Refining with AI" spinners to complete.
-4. **Review and Download:**
+   A new tab will automatically open in your default web browser (usually at `http://localhost:8501`).
+3. **Select your AI Model:**
+   In the **sidebar** on the left, use the dropdown menu to choose which Ollama model you want to use for the refinement step.
+4. **Process an Image:**
+   * Drag and drop an image (`.jpg`, `.jpeg`, or `.png`) into the upload box.
+   * The app will first run the OCR, then pass the text to your chosen AI model for cleaning.
+5. **Review and Download:**
    * Compare the **Raw OCR Output** with the **AI Refined Output**.
    * Click **"Download Cleaned Text"** to save your result.
 
@@ -60,31 +64,21 @@ Before running the application, you must have the following installed:
 
 ```text
 .
-├── app.py              # The main application (UI + Logic)
+├── app.py              # The main application (Streamlit UI + OCR + AI Logic)
 └── README.md           # Project documentation
 ```
 
 ---
 
-## ⚙️ Configuration & Customization
+## ⚙️ How It Works
 
-### Changing Languages
-To add or remove supported languages, edit the `load_ocr_reader` function in `app.py`:
-```python
-# For English and Estonian
-reader = easyocr.Reader(['en', 'et']) 
+This application utilizes a two-stage intelligent pipeline:
 
-# For English and German only
-reader = easyocr.Reader(['en', 'de']) 
-```
+1. **Stage 1 (Extraction):** The `EasyOCR` engine scans the image pixels to detect shapes and convert them into a raw string of text. This stage may occasionally misread characters due to lighting or font styles.
+2. **Stage 2 (Intelligence):** The raw text is sent to your locally running LLM (selected via the sidebar). The AI analyzes the sentence structure and context to "repair" the text, acting as a highly advanced, context-aware spell-checker.
 
-### Changing the AI Model
-If you have a powerful GPU and want higher accuracy, you can use a larger model (like `llama3` or `mistral`).
-1. Download the model via terminal: `ollama pull llama3`
-2. Update the `refine_text_with_ai` function in `app.py`:
-   ```python
-   response = ollama.chat(model='llama3', ...)
-   ```
+## 🔍 Troubleshooting
 
-## ⚖️ License
-[Specify your license, e.g., MIT]
+* **"No models found":** Ensure Ollama is running in your system tray and that you have pulled a model using `ollama pull <model_name>`.
+* **Slow Processing:** The speed of the refinement depends on your computer's hardware (CPU/GPU) and the size of the model selected. For faster results on older hardware, use smaller models like `gemma:2b` or `phi3`.
+* **Ollama Connection Error:** Ensure the Ollama service is active before starting the Streamlit app.
