@@ -25,6 +25,7 @@ Before running the application, you must have the following installed:
      ```bash
      ollama pull gemma:2b
      ```
+     *(Any Gemma model works; the app picks the strongest one installed. On a low-memory machine use `ollama pull gemma:2b` instead.)*
 
 ---
 
